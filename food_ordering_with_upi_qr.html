@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FoodieFast | Testing Mini Project</title>
+  <meta name="description" content="Functional and Usability Testing of an Online Food Ordering Application - Student Mini Project" />
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --card:#121826;
+      --card2:#0f1522;
+      --text:#e8eefc;
+      --muted:#a9b6d3;
+      --line:rgba(255,255,255,.08);
+      --brand:#ff4d4d;
+      --brand2:#ff8a00;
+      --good:#35d07f;
+      --bad:#ff5c7a;
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background:
+        radial-gradient(1200px 600px at 15% -10%, rgba(255,77,77,.25), transparent 55%),
+        radial-gradient(900px 500px at 100% 0%, rgba(255,138,0,.18), transparent 55%),
+        linear-gradient(180deg, #070a10, var(--bg));
+      color:var(--text);
+      overflow-x:hidden;
+    }
+
+    a{color:inherit; text-decoration:none}
+    button, input, select{font:inherit}
+
+    .container{width:min(1150px, 92vw); margin:0 auto}
+
+    /* Navbar */
+    .nav{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter: blur(12px);
+      background: rgba(10, 14, 22, .72);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 0;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+    .brand-badge{
+      width:38px;height:38px;
+      border-radius:12px;
+      display:grid;place-items:center;
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      box-shadow: 0 12px 24px rgba(255,77,77,.22);
+    }
+    .brand small{display:block; font-weight:600; color:var(--muted); letter-spacing:0}
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .pill{
+      padding:10px 12px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      color:var(--muted);
+      background: rgba(255,255,255,.02);
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .pill:hover{transform: translateY(-1px); background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.14)}
+    .pill.active{
+      color:var(--text);
+      border-color: rgba(255,77,77,.55);
+      background: rgba(255,77,77,.10);
+    }
+
+    .cart-mini{
+      display:flex; align-items:center; gap:8px;
+    }
+    .badge{
+      min-width:22px;
+      height:22px;
+      padding:0 7px;
+      border-radius:999px;
+      display:grid; place-items:center;
+      font-size:12px;
+      background: rgba(255,255,255,.10);
+      border:1px solid var(--line);
+      color:var(--text);
+    }
+
+    /* Layout */
+    .page{display:none; padding:22px 0 40px}
+    .page.active{display:block}
+
+    .grid{
+      display:grid;
+      gap:16px;
+    }
+
+    /* Hero */
+    .hero{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:18px;
+      align-items:stretch;
+      margin-top:8px;
+    }
+
+    .hero-card{
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      box-shadow: var(--shadow);
+      padding:18px;
+      overflow:hidden;
+      position:relative;
+    }
+
+    .hero-card::after{
+      content:"";
+      position:absolute;
+      inset:-80px -120px auto auto;
+      width:260px;height:260px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,77,77,.35), transparent 60%);
+      transform: rotate(20deg);
+      pointer-events:none;
+    }
+
+    .hero h1{
+      margin:0;
+      font-size: clamp(26px, 3.6vw, 42px);
+      line-height:1.05;
+      letter-spacing:-.6px;
+    }
+    .hero p{margin:10px 0 0; color:var(--muted); max-width:52ch}
+
+    .search{
+      display:flex;
+      gap:10px;
+      margin-top:14px;
+    }
+    .input{
+      flex:1;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background: rgba(10,14,22,.65);
+      color:var(--text);
+      outline:none;
+      transition: border-color .15s ease, transform .15s ease;
+    }
+    .input:focus{border-color: rgba(255,77,77,.55); transform: translateY(-1px)}
+
+    .btn{
+      border:none;
+      padding:12px 14px;
+      border-radius:14px;
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      color:#10121a;
+      font-weight:800;
+      cursor:pointer;
+      transition: transform .15s ease, filter .15s ease;
+      box-shadow: 0 12px 24px rgba(255,77,77,.18);
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      justify-content:center;
+      white-space:nowrap;
+    }
+    .btn:hover{transform: translateY(-1px); filter:saturate(1.08)}
+    .btn:active{transform: translateY(0px) scale(.99)}
+
+    .btn.secondary{
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      border:1px solid var(--line);
+      box-shadow:none;
+    }
+
+    .hero-right{
+      display:grid;
+      gap:12px;
+    }
+
+    .stat{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      padding:14px;
+      border-radius: var(--radius);
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.02);
+    }
+    .stat .icon{
+      width:42px;height:42px;
+      border-radius:14px;
+      display:grid; place-items:center;
+      background: rgba(255,77,77,.12);
+      border:1px solid rgba(255,77,77,.25);
+    }
+    .stat strong{display:block}
+    .stat span{color:var(--muted); font-size:13px}
+
+    /* Section headings */
+    .section-title{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:10px;
+      margin:22px 0 10px;
+    }
+    .section-title h2{margin:0; font-size:18px}
+    .section-title p{margin:0; color:var(--muted); font-size:13px}
+
+    /* Category cards */
+    .cats{
+      display:grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap:12px;
+    }
+    .cat{
+      padding:14px;
+      border-radius: var(--radius);
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.02);
+      cursor:pointer;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-height:62px;
+    }
+    .cat:hover{transform: translateY(-2px); background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.14)}
+    .cat .emoji{
+      width:38px;height:38px;
+      border-radius:14px;
+      display:grid; place-items:center;
+      background: rgba(255,138,0,.10);
+      border:1px solid rgba(255,138,0,.22);
+      font-size:18px;
+    }
+    .cat b{font-size:14px}
+    .cat small{display:block; color:var(--muted); font-size:12px}
+
+    /* Cards */
+    .cards{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:14px;
+    }
+    .card{
+      border-radius: var(--radius);
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.02);
+      overflow:hidden;
+      box-shadow: 0 10px 24px rgba(0,0,0,.22);
+      transition: transform .15s ease, border-color .15s ease;
+      position:relative;
+    }
+    .card:hover{transform: translateY(-2px); border-color: rgba(255,255,255,.14)}
+
+    .thumb{
+      height:120px;
+      background:
+        radial-gradient(120px 120px at 20% 20%, rgba(255,77,77,.25), transparent 55%),
+        radial-gradient(120px 120px at 80% 20%, rgba(255,138,0,.18), transparent 55%),
+        linear-gradient(135deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      display:flex;
+      align-items:flex-end;
+      padding:12px;
+    }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(10,14,22,.72);
+      border:1px solid var(--line);
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .card-body{padding:12px}
+    .title{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .title h3{margin:0; font-size:15px; line-height:1.2}
+    .muted{color:var(--muted)}
+
+    .price-row{display:flex; align-items:center; justify-content:space-between; margin-top:10px; gap:10px}
+    .price{font-weight:800}
+    .rating{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      color: #ffd08a;
+      font-size:13px;
+    }
+
+    .qty{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 8px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(10,14,22,.55);
+    }
+    .qty button{
+      width:28px;height:28px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.05);
+      color:var(--text);
+      cursor:pointer;
+      transition: transform .12s ease;
+    }
+    .qty button:hover{transform: translateY(-1px)}
+    .qty span{min-width:16px; text-align:center; font-weight:700}
+
+    /* Filters */
+    .filters{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin: 10px 0 14px;
+    }
+    .select{
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background: rgba(10,14,22,.65);
+      color:var(--text);
+      outline:none;
+    }
+
+    /* Cart */
+    .cart-wrap{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:16px;
+    }
+
+    .panel{
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.02);
+      box-shadow: var(--shadow);
+      padding:14px;
+    }
+
+    .cart-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background: rgba(10,14,22,.45);
+      margin-bottom:10px;
+    }
+
+    .cart-left{display:flex; align-items:center; gap:12px; min-width:0}
+    .cart-img{
+      width:52px;height:52px;
+      border-radius:16px;
+      background: linear-gradient(135deg, rgba(255,77,77,.20), rgba(255,138,0,.14));
+      border:1px solid rgba(255,255,255,.10);
+      display:grid; place-items:center;
+      font-size:20px;
+      flex:0 0 auto;
+    }
+    .cart-meta{min-width:0}
+    .cart-meta b{display:block; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+    .cart-meta small{color:var(--muted)}
+
+    .cart-actions{display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end}
+
+    .danger{
+      background: rgba(255,92,122,.10);
+      border:1px solid rgba(255,92,122,.28);
+      color: var(--text);
+    }
+
+    /* Forms */
+    .form{
+      display:grid;
+      gap:12px;
+    }
+    .field label{display:block; font-size:13px; color:var(--muted); margin-bottom:6px}
+    .field input, .field textarea{
+      width:100%;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background: rgba(10,14,22,.65);
+      color:var(--text);
+      outline:none;
+    }
+    .field textarea{min-height:90px; resize:vertical}
+
+    .helper{font-size:13px; color:var(--muted)}
+    .error{color: var(--bad); font-size:13px; display:none}
+
+    /* Docs */
+    .tabs{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin: 10px 0 14px;
+    }
+    .tab{
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.02);
+      color:var(--muted);
+      cursor:pointer;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+    }
+    .tab:hover{transform: translateY(-1px); background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.14)}
+    .tab.active{
+      color:var(--text);
+      border-color: rgba(255,77,77,.55);
+      background: rgba(255,77,77,.10);
+    }
+
+    .doc{display:none}
+    .doc.active{display:block}
+
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border-radius: 16px;
+      border:1px solid var(--line);
+      background: rgba(10,14,22,.45);
+    }
+    th, td{
+      padding:12px;
+      border-bottom:1px solid var(--line);
+      vertical-align:top;
+      text-align:left;
+      font-size:13px;
+    }
+    th{color:var(--muted); font-weight:700; background: rgba(255,255,255,.03)}
+    tr:last-child td{border-bottom:none}
+
+    .status{
+      padding:6px 10px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border:1px solid var(--line);
+      font-weight:700;
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .pass{background: rgba(53,208,127,.10); border-color: rgba(53,208,127,.22)}
+    .fail{background: rgba(255,92,122,.10); border-color: rgba(255,92,122,.25)}
+
+    .footer{
+      border-top:1px solid var(--line);
+      margin-top:28px;
+      padding:18px 0;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .footer-grid{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr .8fr;
+      gap:14px;
+    }
+
+    /* Modal */
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:100;
+    }
+    .modal{
+      width:min(520px, 92vw);
+      border-radius: 22px;
+      border:1px solid var(--line);
+      background: rgba(12,16,26,.92);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+      padding:16px;
+      animation: pop .18s ease;
+    }
+    @keyframes pop{from{transform: translateY(10px) scale(.98); opacity:.6} to{transform: translateY(0) scale(1); opacity:1}}
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .hero{grid-template-columns:1fr;}
+      .cards{grid-template-columns: repeat(2, 1fr)}
+      .cats{grid-template-columns: repeat(2, 1fr)}
+      .cart-wrap{grid-template-columns: 1fr}
+      .footer-grid{grid-template-columns: 1fr}
+    }
+    @media (max-width: 420px){
+      .cards{grid-template-columns: 1fr}
+      .pill{padding:9px 10px}
+      th, td{padding:10px}
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="#" data-page="home">
+        <div class="brand-badge" aria-hidden="true">🍔</div>
+        <div>
+          FoodieFast
+          <small>Testing Mini Project</small>
+        </div>
+      </a>
+
+      <nav class="nav-links" aria-label="Primary">
+        <span class="pill active" data-page="home">🏠 Home</span>
+        <span class="pill" data-page="menu">📋 Menu</span>
+        <span class="pill" data-page="cart">
+          <span class="cart-mini">🛒 Cart <span class="badge" id="cartCount">0</span></span>
+        </span>
+        <span class="pill" data-page="login">🔐 Login</span>
+        <span class="pill" data-page="docs">🧪 Testing Docs</span>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- HOME -->
+    <section class="page active" id="page-home">
+      <div class="hero">
+        <div class="hero-card">
+          <h1>Order Your Favorite Food Fast</h1>
+          <p>
+            Demo UI for a student mini project:
+            <b>Functional and Usability Testing of an Online Food Ordering Application</b>.
+          </p>
+
+          <div class="search" role="search">
+            <input id="homeSearch" class="input" placeholder="Search food or restaurants" />
+            <button class="btn" id="homeSearchBtn">🔎 Search</button>
+          </div>
+
+          <div class="section-title" style="margin-top:16px">
+            <h2>Food Categories</h2>
+            <p>Tap to explore</p>
+          </div>
+
+          <div class="cats" id="categoryGrid"></div>
+        </div>
+
+        <div class="hero-right">
+          <div class="stat">
+            <div class="icon">⚡</div>
+            <div>
+              <strong>Fast Checkout</strong>
+              <span>Simple flow for usability testing</span>
+            </div>
+          </div>
+          <div class="stat">
+            <div class="icon">🧪</div>
+            <div>
+              <strong>Functional Testing</strong>
+              <span>Login • Search • Cart • Checkout</span>
+            </div>
+          </div>
+          <div class="stat">
+            <div class="icon">📱</div>
+            <div>
+              <strong>Mobile-first UI</strong>
+              <span>Responsive layout + hover effects</span>
+            </div>
+          </div>
+          <div class="panel" style="padding:14px">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px">
+              <div>
+                <strong>Quick Actions</strong>
+                <div class="helper">Try adding items and checking out</div>
+              </div>
+              <button class="btn secondary" data-page="docs">Open Docs</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">
+        <h2>Popular Items</h2>
+        <p>Most ordered in demo</p>
+      </div>
+
+      <div class="cards" id="popularGrid"></div>
+
+      <footer class="footer">
+        <div class="footer-grid">
+          <div>
+            <b>FoodieFast (Demo)</b>
+            <div class="helper">Student project website for Software Testing mini project.</div>
+            <div style="margin-top:8px">📩 contact@foodiefast.demo</div>
+          </div>
+          <div>
+            <b>Quick Links</b>
+            <div class="helper"><a href="#" data-page="menu">Menu</a></div>
+            <div class="helper"><a href="#" data-page="cart">Cart</a></div>
+            <div class="helper"><a href="#" data-page="docs">Testing Docs</a></div>
+          </div>
+          <div>
+            <b>Project Info</b>
+            <div class="helper">Dummy data only • No real payment</div>
+            <div class="helper">LocalStorage cart enabled</div>
+          </div>
+        </div>
+      </footer>
+    </section>
+
+    <!-- MENU -->
+    <section class="page" id="page-menu">
+      <div class="section-title">
+        <div>
+          <h2>Menu</h2>
+          <p>Browse items, apply filters, add to cart</p>
+        </div>
+        <button class="btn secondary" data-page="cart">Go to Cart →</button>
+      </div>
+
+      <div class="filters">
+        <select class="select" id="filterType">
+          <option value="all">All (Veg + Non-Veg)</option>
+          <option value="veg">Veg Only</option>
+          <option value="nonveg">Non-Veg Only</option>
+        </select>
+
+        <select class="select" id="sortBy">
+          <option value="default">Sort: Recommended</option>
+          <option value="priceAsc">Price: Low → High</option>
+          <option value="priceDesc">Price: High → Low</option>
+          <option value="ratingDesc">Rating: High → Low</option>
+        </select>
+
+        <input class="input" id="menuSearch" placeholder="Search menu items..." style="max-width:320px" />
+        <button class="btn" id="applyFilters">Apply</button>
+      </div>
+
+      <div class="cards" id="menuGrid"></div>
+    </section>
+
+    <!-- CART -->
+    <section class="page" id="page-cart">
+      <div class="section-title">
+        <div>
+          <h2>Your Cart</h2>
+          <p>Update quantity, remove items, calculate total</p>
+        </div>
+        <button class="btn secondary" data-page="menu">← Continue Shopping</button>
+      </div>
+
+      <div class="cart-wrap">
+        <div class="panel">
+          <div id="cartList"></div>
+          <div id="emptyCart" class="panel" style="display:none; text-align:center">
+            <div style="font-size:40px">🛒</div>
+            <b>Cart is empty</b>
+            <div class="helper" style="margin-top:6px">Add items from the Menu page.</div>
+            <div style="margin-top:12px">
+              <button class="btn" data-page="menu">Browse Menu</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <b>Bill Summary</b>
+          <div class="helper" style="margin-top:6px">(Dummy pricing • No real payment)</div>
+
+          <div style="margin-top:12px; display:grid; gap:8px">
+            <div style="display:flex; justify-content:space-between; color:var(--muted)">
+              <span>Items Total</span>
+              <span id="itemsTotal">₹0</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; color:var(--muted)">
+              <span>Delivery Fee</span>
+              <span id="deliveryFee">₹0</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; color:var(--muted)">
+              <span>Platform Fee</span>
+              <span id="platformFee">₹0</span>
+            </div>
+            <div style="height:1px; background:var(--line); margin:6px 0"></div>
+            <div style="display:flex; justify-content:space-between; font-weight:900">
+              <span>Grand Total</span>
+              <span id="grandTotal">₹0</span>
+            </div>
+          </div>
+
+          <div style="margin-top:14px; display:grid; gap:10px">
+            <button class="btn" id="checkoutBtn">Proceed to Checkout</button>
+            <button class="btn secondary" id="clearCartBtn">Clear Cart</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOGIN -->
+    <section class="page" id="page-login">
+      <div class="section-title">
+        <div>
+          <h2>Login</h2>
+          <p>Simple validation for empty fields</p>
+        </div>
+      </div>
+
+      <div class="panel" style="max-width:520px">
+        <form class="form" id="loginForm">
+          <div class="field">
+            <label>Email</label>
+            <input id="loginEmail" type="email" placeholder="example@gmail.com" />
+          </div>
+          <div class="field">
+            <label>Password</label>
+            <input id="loginPassword" type="password" placeholder="••••••••" />
+          </div>
+
+          <div class="error" id="loginError">Please enter both email and password.</div>
+
+          <button class="btn" type="submit">Login</button>
+
+          <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap">
+            <a class="helper" href="#" onclick="return false;">Forgot password?</a>
+            <a class="helper" href="#" onclick="return false;">New user? Sign up</a>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- CHECKOUT -->
+    <section class="page" id="page-checkout">
+      <div class="section-title">
+        <div>
+          <h2>Checkout</h2>
+          <p>Address + Payment option + confirmation popup</p>
+        </div>
+      </div>
+
+      <div class="cart-wrap">
+        <div class="panel">
+          <b>Delivery Address</b>
+          <div class="helper" style="margin-top:6px">Enter dummy details for testing.</div>
+
+          <form class="form" id="checkoutForm" style="margin-top:12px">
+            <div class="field">
+              <label>Full Name</label>
+              <input id="fullName" placeholder="Your name" />
+            </div>
+            <div class="field">
+              <label>Phone</label>
+              <input id="phone" placeholder="10-digit mobile number" />
+            </div>
+            <div class="field">
+              <label>Address</label>
+              <textarea id="address" placeholder="House no, street, area, city"></textarea>
+            </div>
+
+            <div class="error" id="checkoutError">Please fill all address fields before placing the order.</div>
+
+            <button class="btn" type="submit">Place Order</button>
+          </form>
+        </div>
+
+        <div class="panel">
+          <b>Payment Options</b>
+          <div class="helper" style="margin-top:6px">Dummy payment only (no real transaction)</div>
+
+          <div style="margin-top:12px; display:grid; gap:10px">
+            <label class="pill" style="justify-content:space-between">
+              <span>💵 Cash on Delivery (COD)</span>
+              <input type="radio" name="pay" value="COD" checked />
+            </label>
+            <label class="pill" style="justify-content:space-between">
+              <span>📲 UPI</span>
+              <input type="radio" name="pay" value="UPI" />
+            </label>
+
+            <!-- UPI QR Box (Hidden by default) -->
+            <div id="upiQrBox" style="display:none; margin-top:12px; text-align:center;">
+              <div class="panel" style="padding:12px;">
+                <b>Scan & Pay using UPI</b>
+                <div class="helper" style="margin-top:6px;">Use Google Pay / PhonePe / Paytm</div>
+
+                <img 
+                  src="WhatsApp Image 2026-01-23 at 9.39.05 AM.jpeg"
+                  alt="UPI QR Code"
+                  style="width:220px; max-width:100%; margin-top:10px; border-radius:16px; border:1px solid var(--line);"
+                />
+
+                <div class="helper" style="margin-top:10px;">
+                  After payment, click <b>Place Order</b>
+                </div>
+              </div>
+            </div>
+
+            <label class="pill" style="justify-content:space-between">
+              <span>💳 Card</span>
+              <input type="radio" name="pay" value="Card" />
+            </label>
+
+            <div style="height:1px; background:var(--line); margin:6px 0"></div>
+            <div style="display:flex; justify-content:space-between; font-weight:900">
+              <span>Payable Amount</span>
+              <span id="checkoutTotal">₹0</span>
+            </div>
+
+            <button class="btn secondary" id="downloadReportBtn">⬇️ Download Report</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DOCS -->
+    <section class="page" id="page-docs">
+      <div class="section-title">
+        <div>
+          <h2>Testing Documentation</h2>
+          <p>Test plan, test cases, bug report, usability feedback & results</p>
+        </div>
+        <button class="btn secondary" id="downloadReportBtn2">⬇️ Download Report</button>
+      </div>
+
+      <div class="tabs" id="docTabs">
+        <span class="tab active" data-doc="overview">A) Overview</span>
+        <span class="tab" data-doc="plan">B) Test Plan</span>
+        <span class="tab" data-doc="cases">C) Functional Test Cases</span>
+        <span class="tab" data-doc="bugs">D) Bug Report</span>
+        <span class="tab" data-doc="usability">E) Usability Feedback</span>
+        <span class="tab" data-doc="summary">F) Test Summary</span>
+      </div>
+
+      <div class="panel">
+        <div class="doc active" id="doc-overview">
+          <h3 style="margin-top:0">Project Overview</h3>
+          <p class="muted">
+            <b>Objective:</b> To test the <b>functionality</b> and <b>usability</b> of a demo online food ordering application.
+            The goal is to ensure core flows work correctly (login, menu browsing, cart operations, checkout, payment selection)
+            and the interface remains easy to understand on mobile and desktop.
+          </p>
+          <p class="muted">
+            <b>Scope:</b> Login, Search, Category browsing, Add/Remove items, Quantity update, Checkout, Payment selection,
+            Order confirmation.
+          </p>
+          <div class="panel" style="margin-top:12px">
+            <b>Mini App Modules</b>
+            <div class="helper" style="margin-top:6px">UI demo pages included in this website:</div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px">
+              <span class="pill">🔐 Login</span>
+              <span class="pill">📋 Menu</span>
+              <span class="pill">🛒 Cart</span>
+              <span class="pill">🧾 Checkout</span>
+              <span class="pill">🧪 Testing Docs</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="doc" id="doc-plan">
+          <h3 style="margin-top:0">Test Plan</h3>
+          <div class="grid" style="grid-template-columns: 1fr; gap:10px">
+            <div class="panel">
+              <b>Test Objectives</b>
+              <ul class="muted">
+                <li>Verify login form validations and user flow.</li>
+                <li>Validate menu browsing, filtering, and searching.</li>
+                <li>Ensure cart operations (add, remove, update quantity) work correctly.</li>
+                <li>Verify checkout and order confirmation behavior.</li>
+                <li>Evaluate usability on mobile-first layout.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <b>Test Environment</b>
+              <ul class="muted">
+                <li>Browser: Chrome / Edge (latest)</li>
+                <li>Device: Mobile + Desktop responsive view</li>
+                <li>OS: Windows / Android</li>
+                <li>Storage: LocalStorage used for cart data</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <b>Test Types</b>
+              <ul class="muted">
+                <li><b>Functional Testing</b>: Verify expected behavior of each feature.</li>
+                <li><b>Usability Testing</b>: Check ease of use, clarity, and mobile friendliness.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <b>Entry / Exit Criteria</b>
+              <ul class="muted">
+                <li><b>Entry:</b> UI pages available, dummy data loaded, cart storage enabled.</li>
+                <li><b>Exit:</b> All critical test cases executed, major bugs documented, summary report prepared.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="doc" id="doc-cases">
+          <h3 style="margin-top:0">Functional Test Cases</h3>
+          <div class="helper" style="margin-bottom:10px">Sample test cases (10+) for student mini project.</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Test Case ID</th>
+                <th>Feature</th>
+                <th>Steps</th>
+                <th>Expected Result</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>TC-01</td>
+                <td>Login</td>
+                <td>Enter valid email + password → Click Login</td>
+                <td>User logs in successfully / success message shown</td>
+                <td><span class="status pass">✅ Pass</span></td>
+              </tr>
+              <tr>
+                <td>TC-02</td>
+                <td>Login</td>
+                <td>Enter valid email + wrong password → Click Login</td>
+                <td>Error message should be displayed</td>
+                <td><span class="status pass">✅ Pass</span></td>
+              </tr>
+              <tr>
+                <td>TC-03</td>
+                <td>Login Validation</td>
+                <td>Keep fields empty → Click Login</td>
+                <td>Validation message shown for empty fields</td>
+                <td><span class="status pass">✅ Pass</span></td>
+              </tr>
+              <tr>
+                <td>TC-04</td>
+                <td>Search</td>
+                <td>Search for "Pizza" in menu search bar</td>
+                <td>Pizza items displayed in results</td>
+                <td><span class="status pass">✅ Pass</span></td>
+              </tr>
+              <tr>
+                <td>TC-05</td>
+                <td>Cart</td>
+                <td>Click Add to Cart on any item</td>
+                <td>Item added and cart count increases</td>
+                <td><span class="status pass">✅ Pass</span></td>
+              </tr>
+              <tr>
+                <td>TC-06</td>
+                <td>Cart</td>
+                <td>Increase quantity using + button</td>
+                <td>Quantity increases and total updates</td>
+                <td><span class="status pass">✅ Pass</span></td>
+              </tr>
+              <tr>
+                <td>TC-07</td>
+                <td>Cart</td>
+                <td>Decrease quantity using - button</td>
+                <td>Quantity decreases; if 0 item removed</td>
+                <td><span class="status pass">✅ Pass</span></td>
+              </tr>
+              <tr>
+                <td>TC-08</td>
+                <td>Filters</td>
+                <td>Select Veg Only filter → Apply</td>
+                <td>Only veg items displayed</td>
+                <td><span class="status pass">✅ Pass</span></td>
+              </tr>
+              <tr>
+                <td>TC-09</td>
+                <td>Checkout</td>
+                <td>Proceed to checkout with address missing</td>
+                <td>Validation error displayed</td>
+                <td><span class="status pass">✅ Pass</span></td>
+              </tr>
+              <tr>
+                <td>TC-10</td>
+                <td>Payment</td>
+                <td>Select payment option (COD/UPI/Card)</td>
+                <td>Selected option stored for order</td>
+                <td><span class="status pass">✅ Pass</span></td>
+              </tr>
+              <tr>
+                <td>TC-11</td>
+                <td>Order</td>
+                <td>Fill address → Click Place Order</td>
+                <td>Confirmation popup shown and cart clears</td>
+                <td><span class="status pass">✅ Pass</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="doc" id="doc-bugs">
+          <h3 style="margin-top:0">Bug Report</h3>
+          <div class="helper" style="margin-bottom:10px">Sample bug report table (5 bugs).</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Bug ID</th>
+                <th>Title</th>
+                <th>Steps to Reproduce</th>
+                <th>Expected Result</th>
+                <th>Actual Result</th>
+                <th>Severity</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>BUG-01</td>
+                <td>Cart total not updating after quantity decrease</td>
+                <td>Add item → Increase qty → Decrease qty</td>
+                <td>Total should update instantly</td>
+                <td>Total updates only after refresh</td>
+                <td>High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>BUG-02</td>
+                <td>Search returns empty for lowercase keywords</td>
+                <td>Search "pizza" (lowercase)</td>
+                <td>Should match "Pizza" items</td>
+                <td>No results displayed</td>
+                <td>Medium</td>
+                <td>Fixed</td>
+              </tr>
+              <tr>
+                <td>BUG-03</td>
+                <td>Checkout button clickable when cart is empty</td>
+                <td>Open cart → Empty cart → Click Checkout</td>
+                <td>Button should be disabled</td>
+                <td>User can navigate to checkout</td>
+                <td>Medium</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>BUG-04</td>
+                <td>Mobile navbar wraps awkwardly on small screens</td>
+                <td>Open website on 360px width</td>
+                <td>Navbar should remain usable</td>
+                <td>Links wrap into 2 lines, looks cluttered</td>
+                <td>Low</td>
+                <td>In Progress</td>
+              </tr>
+              <tr>
+                <td>BUG-05</td>
+                <td>Payment option not saved after switching tabs</td>
+                <td>Select UPI → Open docs → Back to checkout</td>
+                <td>Selection should persist</td>
+                <td>Resets to COD</td>
+                <td>Low</td>
+                <td>Open</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="doc" id="doc-usability">
+          <h3 style="margin-top:0">Usability Testing Feedback</h3>
+          <div class="panel">
+            <b>User Feedback Points</b>
+            <ul class="muted">
+              <li>Search bar is easy to find on the home screen.</li>
+              <li>Category cards are visually clear and help quick navigation.</li>
+              <li>Cart page summary improves confidence before checkout.</li>
+            </ul>
+          </div>
+          <div class="panel" style="margin-top:10px">
+            <b>UI Improvement Suggestions</b>
+            <ul class="muted">
+              <li>Buttons should be larger on mobile for better accessibility.</li>
+              <li>Checkout steps should be clearer (Address → Payment → Confirm).</li>
+              <li>Add a small toast message when item is added to cart.</li>
+              <li>Show veg/non-veg indicator icon on menu cards.</li>
+              <li>Reduce number of navbar items on very small screens.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="doc" id="doc-summary">
+          <h3 style="margin-top:0">Test Summary Report</h3>
+          <div class="grid" style="grid-template-columns: repeat(2, 1fr); gap:12px">
+            <div class="panel">
+              <b>Total Test Cases</b>
+              <div style="font-size:28px; font-weight:900; margin-top:8px">11</div>
+              <div class="helper">Functional test cases executed</div>
+            </div>
+            <div class="panel">
+              <b>Passed / Failed</b>
+              <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px">
+                <span class="status pass">✅ Passed: 11</span>
+                <span class="status fail">❌ Failed: 0</span>
+              </div>
+              <div class="helper" style="margin-top:6px">(Sample results for mini project)</div>
+            </div>
+            <div class="panel" style="grid-column: 1 / -1">
+              <b>Key Findings</b>
+              <ul class="muted">
+                <li>Cart operations and totals work correctly with LocalStorage.</li>
+                <li>Checkout validation prevents missing address submission.</li>
+                <li>UI is responsive and usable across screen sizes.</li>
+              </ul>
+              <b>Conclusion</b>
+              <p class="muted" style="margin-bottom:0">
+                The application meets functional requirements for ordering flow and is generally easy to use.
+                Minor UI improvements can further enhance the mobile experience.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:14px">
+        <b>Download Report</b>
+        <div class="helper" style="margin-top:6px">This button downloads a placeholder report text file.</div>
+        <div style="margin-top:10px">
+          <button class="btn" id="downloadReportBtn3">⬇️ Download Report</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL -->
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px">
+        <div>
+          <b id="modalTitle">Done</b>
+          <div class="helper" id="modalText" style="margin-top:6px">Action completed.</div>
+        </div>
+        <button class="btn secondary" id="closeModal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---------- Dummy Data ----------
+    const categories = [
+      { key: 'Pizza', emoji: '🍕', sub: 'Cheesy & hot' },
+      { key: 'Burger', emoji: '🍔', sub: 'Juicy bites' },
+      { key: 'Biryani', emoji: '🍛', sub: 'Spicy & rich' },
+      { key: 'Desserts', emoji: '🍰', sub: 'Sweet cravings' },
+      { key: 'Drinks', emoji: '🥤', sub: 'Chilled sips' },
+    ];
+
+    const items = [
+      { id: 'i1', name: 'Margherita Pizza', desc: 'Classic cheese pizza with fresh basil.', price: 199, rating: 4.5, type: 'veg', category: 'Pizza', emoji: '🍕' },
+      { id: 'i2', name: 'Pepperoni Pizza', desc: 'Loaded pepperoni with extra cheese.', price: 279, rating: 4.6, type: 'nonveg', category: 'Pizza', emoji: '🍕' },
+      { id: 'i3', name: 'Aloo Tikki Burger', desc: 'Crispy patty, onions, and special sauce.', price: 129, rating: 4.2, type: 'veg', category: 'Burger', emoji: '🍔' },
+      { id: 'i4', name: 'Chicken Burger', desc: 'Grilled chicken with mayo and lettuce.', price: 169, rating: 4.4, type: 'nonveg', category: 'Burger', emoji: '🍔' },
+      { id: 'i5', name: 'Hyderabadi Biryani', desc: 'Aromatic basmati rice with spices.', price: 249, rating: 4.7, type: 'nonveg', category: 'Biryani', emoji: '🍛' },
+      { id: 'i6', name: 'Veg Dum Biryani', desc: 'Slow-cooked veg biryani with herbs.', price: 219, rating: 4.3, type: 'veg', category: 'Biryani', emoji: '🍛' },
+      { id: 'i7', name: 'Chocolate Brownie', desc: 'Fudgy brownie with chocolate chunks.', price: 99, rating: 4.4, type: 'veg', category: 'Desserts', emoji: '🍰' },
+      { id: 'i8', name: 'Gulab Jamun', desc: 'Soft, syrupy, and warm dessert.', price: 89, rating: 4.1, type: 'veg', category: 'Desserts', emoji: '🍰' },
+      { id: 'i9', name: 'Cold Coffee', desc: 'Creamy iced coffee with foam top.', price: 119, rating: 4.2, type: 'veg', category: 'Drinks', emoji: '🥤' },
+      { id: 'i10', name: 'Mango Shake', desc: 'Thick mango shake, summer vibe.', price: 109, rating: 4.0, type: 'veg', category: 'Drinks', emoji: '🥤' },
+      { id: 'i11', name: 'Paneer Pizza', desc: 'Paneer chunks with spicy seasoning.', price: 259, rating: 4.3, type: 'veg', category: 'Pizza', emoji: '🍕' },
+      { id: 'i12', name: 'Chicken Wings', desc: 'Crispy wings with peri-peri spice.', price: 189, rating: 4.5, type: 'nonveg', category: 'Burger', emoji: '🍗' },
+    ];
+
+    // ---------- LocalStorage Cart ----------
+    const CART_KEY = 'foodiefast_cart_v1';
+
+    function loadCart(){
+      try{
+        return JSON.parse(localStorage.getItem(CART_KEY)) || {};
+      }catch(e){
+        return {};
+      }
+    }
+
+    function saveCart(cart){
+      localStorage.setItem(CART_KEY, JSON.stringify(cart));
+      updateCartBadge();
+    }
+
+    function cartCount(cart){
+      return Object.values(cart).reduce((sum, qty) => sum + qty, 0);
+    }
+
+    function updateCartBadge(){
+      const cart = loadCart();
+      document.getElementById('cartCount').textContent = cartCount(cart);
+    }
+
+    function addToCart(itemId, qty=1){
+      const cart = loadCart();
+      cart[itemId] = (cart[itemId] || 0) + qty;
+      saveCart(cart);
+      toast('Added to cart', 'Item added successfully.');
+    }
+
+    function setQty(itemId, qty){
+      const cart = loadCart();
+      if(qty <= 0){
+        delete cart[itemId];
+      } else {
+        cart[itemId] = qty;
+      }
+      saveCart(cart);
+      renderCart();
+    }
+
+    function removeFromCart(itemId){
+      const cart = loadCart();
+      delete cart[itemId];
+      saveCart(cart);
+      renderCart();
+    }
+
+    function clearCart(){
+      saveCart({});
+      renderCart();
+    }
+
+    function getCartTotals(){
+      const cart = loadCart();
+      let total = 0;
+      for(const [id, qty] of Object.entries(cart)){
+        const it = items.find(x => x.id === id);
+        if(it) total += it.price * qty;
+      }
+      const delivery = total > 0 ? 25 : 0;
+      const platform = total > 0 ? 5 : 0;
+      const grand = total + delivery + platform;
+      return { total, delivery, platform, grand };
+    }
+
+    // ---------- UI Rendering ----------
+    function starText(r){
+      const full = Math.floor(r);
+      const half = (r - full) >= 0.5;
+      return '★'.repeat(full) + (half ? '½' : '');
+    }
+
+    function renderCategories(){
+      const grid = document.getElementById('categoryGrid');
+      grid.innerHTML = categories.map(c => `
+        <div class="cat" data-cat="${c.key}">
+          <div class="emoji">${c.emoji}</div>
+          <div>
+            <b>${c.key}</b>
+            <small>${c.sub}</small>
+          </div>
+        </div>
+      `).join('');
+
+      grid.querySelectorAll('.cat').forEach(el => {
+        el.addEventListener('click', () => {
+          goTo('menu');
+          document.getElementById('menuSearch').value = el.dataset.cat;
+          applyMenuFilters();
+        });
+      });
+    }
+
+    function itemCard(it, compact=false){
+      return `
+        <article class="card">
+          <div class="thumb">
+            <span class="chip">${it.emoji} ${it.category} • ${it.type === 'veg' ? '🥦 Veg' : '🍗 Non-Veg'}</span>
+          </div>
+          <div class="card-body">
+            <div class="title">
+              <h3>${it.name}</h3>
+              <span class="rating">⭐ ${it.rating.toFixed(1)}</span>
+            </div>
+            <div class="muted" style="font-size:13px; margin-top:6px">${compact ? it.desc : it.desc}</div>
+
+            <div class="price-row">
+              <div>
+                <div class="price">₹${it.price}</div>
+                <div class="muted" style="font-size:12px">${starText(it.rating)}</div>
+              </div>
+              <button class="btn" data-add="${it.id}">Add to Cart</button>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function menuCard(it){
+      return `
+        <article class="card">
+          <div class="thumb">
+            <span class="chip">${it.emoji} ${it.category} • ${it.type === 'veg' ? '🥦 Veg' : '🍗 Non-Veg'}</span>
+          </div>
+          <div class="card-body">
+            <div class="title">
+              <h3>${it.name}</h3>
+              <span class="rating">⭐ ${it.rating.toFixed(1)}</span>
+            </div>
+            <div class="muted" style="font-size:13px; margin-top:6px">${it.desc}</div>
+
+            <div class="price-row">
+              <div>
+                <div class="price">₹${it.price}</div>
+                <div class="muted" style="font-size:12px">${starText(it.rating)}</div>
+              </div>
+              <div style="display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap">
+                <div class="qty" data-qtywrap="${it.id}">
+                  <button type="button" data-dec="${it.id}">-</button>
+                  <span id="qty_${it.id}">1</span>
+                  <button type="button" data-inc="${it.id}">+</button>
+                </div>
+                <button class="btn" data-addqty="${it.id}">Add</button>
+              </div>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderPopular(){
+      const popular = [...items].sort((a,b) => b.rating - a.rating).slice(0,8);
+      const grid = document.getElementById('popularGrid');
+      grid.innerHTML = popular.map(it => itemCard(it, true)).join('');
+
+      grid.querySelectorAll('[data-add]').forEach(btn => {
+        btn.addEventListener('click', () => addToCart(btn.dataset.add, 1));
+      });
+    }
+
+    function applyMenuFilters(){
+      const type = document.getElementById('filterType').value;
+      const sortBy = document.getElementById('sortBy').value;
+      const q = (document.getElementById('menuSearch').value || '').trim().toLowerCase();
+
+      let list = [...items];
+
+      if(type !== 'all') list = list.filter(x => x.type === type);
+
+      if(q){
+        list = list.filter(x => (x.name + ' ' + x.category + ' ' + x.desc).toLowerCase().includes(q));
+      }
+
+      if(sortBy === 'priceAsc') list.sort((a,b) => a.price - b.price);
+      if(sortBy === 'priceDesc') list.sort((a,b) => b.price - a.price);
+      if(sortBy === 'ratingDesc') list.sort((a,b) => b.rating - a.rating);
+
+      const grid = document.getElementById('menuGrid');
+      grid.innerHTML = list.map(menuCard).join('');
+
+      // qty controls
+      grid.querySelectorAll('[data-inc]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.inc;
+          const el = document.getElementById('qty_' + id);
+          el.textContent = String(Math.min(99, (parseInt(el.textContent)||1) + 1));
+        });
+      });
+      grid.querySelectorAll('[data-dec]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.dec;
+          const el = document.getElementById('qty_' + id);
+          el.textContent = String(Math.max(1, (parseInt(el.textContent)||1) - 1));
+        });
+      });
+      grid.querySelectorAll('[data-addqty]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.addqty;
+          const qty = parseInt(document.getElementById('qty_' + id).textContent) || 1;
+          addToCart(id, qty);
+        });
+      });
+    }
+
+    function renderCart(){
+      const cart = loadCart();
+      const list = document.getElementById('cartList');
+      const empty = document.getElementById('emptyCart');
+
+      const entries = Object.entries(cart);
+      if(entries.length === 0){
+        list.innerHTML = '';
+        empty.style.display = 'block';
+      } else {
+        empty.style.display = 'none';
+        list.innerHTML = entries.map(([id, qty]) => {
+          const it = items.find(x => x.id === id);
+          if(!it) return '';
+          return `
+            <div class="cart-item">
+              <div class="cart-left">
+                <div class="cart-img">${it.emoji}</div>
+                <div class="cart-meta">
+                  <b>${it.name}</b>
+                  <small>₹${it.price} • ${it.type === 'veg' ? 'Veg' : 'Non-Veg'}</small>
+                </div>
+              </div>
+
+              <div class="cart-actions">
+                <div class="qty">
+                  <button type="button" data-cdec="${id}">-</button>
+                  <span>${qty}</span>
+                  <button type="button" data-cinc="${id}">+</button>
+                </div>
+                <div style="font-weight:900">₹${it.price * qty}</div>
+                <button class="btn secondary danger" data-remove="${id}">Remove</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        list.querySelectorAll('[data-cinc]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.cinc;
+            const c = loadCart();
+            setQty(id, (c[id] || 0) + 1);
+          });
+        });
+        list.querySelectorAll('[data-cdec]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.cdec;
+            const c = loadCart();
+            setQty(id, (c[id] || 0) - 1);
+          });
+        });
+        list.querySelectorAll('[data-remove]').forEach(btn => {
+          btn.addEventListener('click', () => removeFromCart(btn.dataset.remove));
+        });
+      }
+
+      const totals = getCartTotals();
+      document.getElementById('itemsTotal').textContent = '₹' + totals.total;
+      document.getElementById('deliveryFee').textContent = '₹' + totals.delivery;
+      document.getElementById('platformFee').textContent = '₹' + totals.platform;
+      document.getElementById('grandTotal').textContent = '₹' + totals.grand;
+      document.getElementById('checkoutTotal').textContent = '₹' + totals.grand;
+
+      // disable checkout when empty
+      const checkoutBtn = document.getElementById('checkoutBtn');
+      checkoutBtn.disabled = totals.grand === 0;
+      checkoutBtn.style.opacity = totals.grand === 0 ? .55 : 1;
+      checkoutBtn.style.cursor = totals.grand === 0 ? 'not-allowed' : 'pointer';
+    }
+
+    // ---------- Navigation ----------
+    function goTo(page){
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + page).classList.add('active');
+
+      document.querySelectorAll('.pill[data-page]').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll(`.pill[data-page="${page}"]`).forEach(p => p.classList.add('active'));
+
+      // page hooks
+      if(page === 'menu') applyMenuFilters();
+      if(page === 'cart') renderCart();
+      if(page === 'checkout'){
+        renderCart();
+        const totals = getCartTotals();
+        document.getElementById('checkoutTotal').textContent = '₹' + totals.grand;
+        toggleUpiQr();
+      }
+      if(page === 'docs') window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    document.querySelectorAll('[data-page]').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        goTo(el.dataset.page);
+      });
+    });
+
+    // ---------- Docs Tabs ----------
+    function setDocTab(key){
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll(`.tab[data-doc="${key}"]`).forEach(t => t.classList.add('active'));
+      document.querySelectorAll('.doc').forEach(d => d.classList.remove('active'));
+      document.getElementById('doc-' + key).classList.add('active');
+    }
+
+    document.querySelectorAll('.tab').forEach(t => {
+      t.addEventListener('click', () => setDocTab(t.dataset.doc));
+    });
+
+    // ---------- Actions ----------
+    document.getElementById('applyFilters').addEventListener('click', applyMenuFilters);
+
+    document.getElementById('homeSearchBtn').addEventListener('click', () => {
+      const q = document.getElementById('homeSearch').value.trim();
+      goTo('menu');
+      document.getElementById('menuSearch').value = q;
+      applyMenuFilters();
+    });
+
+    document.getElementById('checkoutBtn').addEventListener('click', () => {
+      const totals = getCartTotals();
+      if(totals.grand === 0){
+        toast('Cart empty', 'Add items before checkout.');
+        return;
+      }
+      goTo('checkout');
+    });
+
+    document.getElementById('clearCartBtn').addEventListener('click', () => {
+      clearCart();
+      toast('Cleared', 'Cart has been cleared.');
+    });
+
+    // Login validation
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPassword').value.trim();
+      const err = document.getElementById('loginError');
+      if(!email || !pass){
+        err.style.display = 'block';
+        return;
+      }
+      err.style.display = 'none';
+      toast('Login success (demo)', 'This is a dummy login for testing.');
+      goTo('home');
+    });
+
+    // Checkout validation + confirmation
+    document.getElementById('checkoutForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('fullName').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const address = document.getElementById('address').value.trim();
+      const err = document.getElementById('checkoutError');
+
+      if(!name || !phone || !address){
+        err.style.display = 'block';
+        return;
+      }
+      err.style.display = 'none';
+
+      const pay = document.querySelector('input[name="pay"]:checked')?.value || 'COD';
+      clearCart();
+      showModal('Order placed successfully! 🎉', `Payment method: ${pay}. (Dummy order for testing)`);
+      goTo('home');
+    });
+
+    // Modal helpers
+    function showModal(title, text){
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalText').textContent = text;
+      document.getElementById('modalBackdrop').style.display = 'flex';
+    }
+
+    function toast(title, text){
+      // Reuse modal as a simple toast-like popup for the mini project
+      showModal(title, text);
+    }
+
+    document.getElementById('closeModal').addEventListener('click', () => {
+      document.getElementById('modalBackdrop').style.display = 'none';
+    });
+
+    document.getElementById('modalBackdrop').addEventListener('click', (e) => {
+      if(e.target.id === 'modalBackdrop'){
+        document.getElementById('modalBackdrop').style.display = 'none';
+      }
+    });
+
+    // Download report (placeholder)
+    function downloadReport(){
+      const content = `Functional and Usability Testing of an Online Food Ordering Application\n\n` +
+        `Project: FoodieFast (Demo UI)\n` +
+        `Modules: Login, Menu, Cart, Checkout, Payment Selection\n\n` +
+        `Test Summary:\n- Total Test Cases: 11\n- Passed: 11\n- Failed: 0\n\n` +
+        `Note: This is a placeholder download generated from the website.`;
+
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'FoodieFast_Test_Report.txt';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    ['downloadReportBtn','downloadReportBtn2','downloadReportBtn3'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.addEventListener('click', (e) => {
+        e.preventDefault();
+        downloadReport();
+        toast('Download started', 'Report downloaded as a placeholder .txt file.');
+      });
+    });
+
+
+    // Show UPI QR when UPI is selected
+    function toggleUpiQr(){
+      const pay = document.querySelector('input[name="pay"]:checked')?.value;
+      const box = document.getElementById('upiQrBox');
+      if(!box) return;
+
+      box.style.display = (pay === "UPI") ? "block" : "none";
+    }
+
+    // Attach listeners to payment radios
+    document.querySelectorAll('input[name="pay"]').forEach(radio => {
+      radio.addEventListener('change', toggleUpiQr);
+    });
+
+    // ---------- Init ----------
+    renderCategories();
+    renderPopular();
+    updateCartBadge();
+  </script>
+</body>
+</html>
